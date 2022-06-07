@@ -39,6 +39,7 @@ namespace Learningdiary_RL
 
     class Topic
     {
+        //All topics
         int Id;
         string Title;
         string Description;
