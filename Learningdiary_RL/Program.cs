@@ -53,10 +53,9 @@ namespace Learningdiary_RL
             DateTime startLearningDate = DateTime.Parse(Console.ReadLine()); 
 
             Console.WriteLine("Is learning still in progress? Yes / No ");
-            bool inProgress = bool.Parse(Console.ReadLine());
-            /*
+ 
             string progress = Console.ReadLine();
-            bool inProgress = Convert.ToBoolean(progress);
+            bool inProgress;
             if (progress == "Yes")
             {
                 
@@ -66,14 +65,9 @@ namespace Learningdiary_RL
             {
                 inProgress = false;
             }
-                */
 
             Console.WriteLine("Completion date dd/mm/yyyy: ");
             DateTime completionDate = DateTime.Parse(Console.ReadLine());
-
-
-            //id int to string
-            string idString = id.ToString();
 
             //saving users answers to file topics.txt
             string path = @"C:\Users\Roosa\source\repos\Learningdiary_RL\topics.txt";
@@ -82,29 +76,30 @@ namespace Learningdiary_RL
             {
                 using (StreamWriter sw = File.CreateText(path))
                 {
-                    // ei antanut laittaa id:tä int muotoisena, miksi kuitenkin hyväksyy doublet ja DateTimet?
-                    // ei myöskään lisää listaan kun tuon idString ja myöskin lopussa kirjoittaa vain sen?
-                    sw.WriteLine(idString,  
-                        title, 
-                        description, 
-                        estimatedTimeToMaster, 
-                        timeSpent, source, 
-                        startLearningDate, 
-                        inProgress, 
-                        completionDate);
+                     
+                    sw.WriteLine(id.ToString() + " " +
+                        title + " " +
+                        description + " " +
+                        estimatedTimeToMaster.ToString() + " " +
+                        timeSpent.ToString() + " " + 
+                        source + " " +
+                        startLearningDate.ToString() + " " +
+                        inProgress.ToString() + " " +
+                        completionDate.ToString());
                 }
             }
 
             using (StreamWriter sw = File.AppendText(path))
             {
-                sw.WriteLine(idString,
-                        title,
-                        description,
-                        estimatedTimeToMaster,
-                        timeSpent, source,
-                        startLearningDate,
-                        inProgress,
-                        completionDate);          
+                sw.WriteLine(id.ToString() + " " +
+                        title + " " +
+                        description + " " +
+                        estimatedTimeToMaster.ToString() + " " +
+                        timeSpent.ToString() + " " +
+                        source + " " +
+                        startLearningDate.ToString() + " " +
+                        inProgress.ToString() + " " +
+                        completionDate.ToString());          
             }
 
             using (StreamReader sr = File.OpenText(path))
@@ -117,6 +112,8 @@ namespace Learningdiary_RL
 
             }
     }
+        
+        
 
         class Topic
         {
