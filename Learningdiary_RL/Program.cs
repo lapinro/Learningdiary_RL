@@ -5,8 +5,7 @@ namespace Learningdiary_RL
     class Program
     {
         static void Main(string[] args)
-        {
-
+        { 
             Console.WriteLine("Write id: ");
             int id = int.Parse(Console.ReadLine());
 
@@ -40,15 +39,37 @@ namespace Learningdiary_RL
     class Topic
     {
         //All topics
-        int Id;
-        string Title;
-        string Description;
-        double EstimatedTimeToMaster;
-        double TimeSpent;
-        string Source;
-        DateTime StartLearningDate;
-        bool InProgress;
-        DateTime CompletionDate;
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public double EstimatedTimeToMaster { get; set; }
+        public double TimeSpent { get; set; }
+        public string Source { get; set; }
+        public DateTime StartLearningDate { get; set; }
+        public bool InProgress { get; set; }
+        public DateTime CompletionDate { get; set; }
+
+        public Topic(int id, 
+            string title, 
+            string description, 
+            double estimatedTimeToMaster, 
+            double timeSpent, 
+            string source, 
+            DateTime startLearningDate, 
+            bool inProgress, 
+            DateTime completionDate)
+        {
+            Id = id;
+            Title = title;
+            Description = description;
+            EstimatedTimeToMaster = estimatedTimeToMaster;
+            TimeSpent = timeSpent;
+            Source = source;
+            StartLearningDate = startLearningDate;
+            InProgress = inProgress;
+            CompletionDate = completionDate;
+        }
+
 
     }
 }
