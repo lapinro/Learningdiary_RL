@@ -8,6 +8,8 @@ namespace Learningdiary_RL
     {
         static void Main(string[] args)
         {
+            Topic topic = new Topic();
+
             //Asking if user wants a list of topics 
             Console.WriteLine("Do you want a list of all topics? Yes / No ");
             string answer = Console.ReadLine();
@@ -21,85 +23,81 @@ namespace Learningdiary_RL
 5. Time used 
 6. Sourses 
 7. Start time
-8. Is learning still in progress
-9. Completion date");
+8. Completion date
+9. Is learning still in progress" + "\n");
             }
             else
                 Console.WriteLine();
-            
-            //Empty line
-            Console.WriteLine(); 
 
             //Asking user to enter values to topics
             Console.WriteLine("Write id: ");
-            int id = int.Parse(Console.ReadLine());
+            topic.Id = int.Parse(Console.ReadLine());
 
             Console.WriteLine("Title: ");
-            string title = Console.ReadLine();
+            topic.Title = Console.ReadLine();
 
             Console.WriteLine("Description: ");
-            string description = Console.ReadLine();
+            topic.Description = Console.ReadLine();
 
             Console.WriteLine("Estimated time to master: ");
-            double estimatedTimeToMaster = double.Parse(Console.ReadLine());
+            topic.EstimatedTimeToMaster = double.Parse(Console.ReadLine());
 
             Console.WriteLine("Time used: ");
-            double timeSpent = double.Parse(Console.ReadLine());
+            topic.TimeSpent = double.Parse(Console.ReadLine());
 
             Console.WriteLine("Source: ");
-            string source = Console.ReadLine();
+            topic.Source = Console.ReadLine();
 
             Console.WriteLine("Start time dd/mm/yyyy: ");
-            DateTime startLearningDate = DateTime.Parse(Console.ReadLine()); 
+            topic.StartLearningDate = DateTime.Parse(Console.ReadLine());
 
             Console.WriteLine("Is learning still in progress? Yes / No ");
- 
-            string progress = Console.ReadLine();
-            bool inProgress;
-            if (progress == "Yes")
+            string progress = Console.ReadLine(topic.InProgress.ToString());
+            //topic.InProgress = bool.Parse(Console.ReadLine());
+            //string progress = Console.ReadLine();
+            //topic.InProgress;
+            if (progress == "No")
             {
-                
-                inProgress = true;
+                topic.InProgress = false;
+                Console.WriteLine("Add completion date dd/mm/yyyy: ");
+                topic.CompletionDate = DateTime.Parse(Console.ReadLine());
             }
-                else
+            else
             {
-                inProgress = false;
+                topic.InProgress = true;
             }
-
-            Console.WriteLine("Completion date dd/mm/yyyy: ");
-            DateTime completionDate = DateTime.Parse(Console.ReadLine());
 
             //saving users answers to file topics.txt
             string path = @"C:\Users\Roosa\source\repos\Learningdiary_RL\topics.txt";
-            
+
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
                 {
-                     
-                    sw.WriteLine(id.ToString() + " " +
-                        title + " " +
-                        description + " " +
-                        estimatedTimeToMaster.ToString() + " " +
-                        timeSpent.ToString() + " " + 
-                        source + " " +
-                        startLearningDate.ToString() + " " +
-                        inProgress.ToString() + " " +
-                        completionDate.ToString());
+
+                    sw.WriteLine(topic.Id.ToString() + " " +
+                        topic.Title + " " +
+                        topic.Description + " " +
+                        topic.EstimatedTimeToMaster.ToString() + " " +
+                        topic.TimeSpent.ToString() + " " +
+                        topic.Source + " " +
+                        topic.StartLearningDate.ToString() + " " +
+                        topic.CompletionDate.ToString() + " " +
+                        topic.InProgress.ToString());
                 }
             }
 
             using (StreamWriter sw = File.AppendText(path))
             {
-                sw.WriteLine(id.ToString() + " " +
-                        title + " " +
-                        description + " " +
-                        estimatedTimeToMaster.ToString() + " " +
-                        timeSpent.ToString() + " " +
-                        source + " " +
-                        startLearningDate.ToString() + " " +
-                        inProgress.ToString() + " " +
-                        completionDate.ToString());          
+                sw.WriteLine(topic.Id.ToString() + " " +
+                        topic.Title + " " +
+                        topic.Description + " " +
+                        topic.EstimatedTimeToMaster.ToString() + " " +
+                        topic.TimeSpent.ToString() + " " +
+                        topic.Source + " " +
+                        topic.StartLearningDate.ToString() + " " +
+                        topic.CompletionDate.ToString() + " " +
+                        topic.InProgress.ToString());
             }
 
             using (StreamReader sr = File.OpenText(path))
@@ -111,44 +109,24 @@ namespace Learningdiary_RL
                 }
 
             }
-    }
-        
-        
-
-        class Topic
-        {
-            //All topics
-            public int Id { get; set; }
-            public string Title { get; set; }
-            public string Description { get; set; }
-            public double EstimatedTimeToMaster { get; set; }
-            public double TimeSpent { get; set; }
-            public string Source { get; set; }
-            public DateTime StartLearningDate { get; set; }
-            public bool InProgress { get; set; }
-            public DateTime CompletionDate { get; set; }
-
-            public Topic(int id,
-                string title,
-                string description,
-                double estimatedTimeToMaster,
-                double timeSpent,
-                string source,
-                DateTime startLearningDate,
-                bool inProgress,
-                DateTime completionDate)
-            {
-                Id = id;
-                Title = title;
-                Description = description;
-                EstimatedTimeToMaster = estimatedTimeToMaster;
-                TimeSpent = timeSpent;
-                Source = source;
-                StartLearningDate = startLearningDate;
-                InProgress = inProgress;
-                CompletionDate = completionDate;
-            }
 
         }
+
+    }
+    class Topic
+    {
+        //All topics
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public double EstimatedTimeToMaster { get; set; }
+        public double TimeSpent { get; set; }
+        public string Source { get; set; }
+        public DateTime StartLearningDate { get; set; }
+        public bool InProgress { get; set; }
+        public DateTime CompletionDate { get; set; }
+
     }
 }
+
+
