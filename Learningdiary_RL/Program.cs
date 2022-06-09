@@ -8,6 +8,7 @@ namespace Learningdiary_RL
     {
         static void Main(string[] args)
         {
+
             Topic topic = new Topic();
 
             //Asking if user wants a list of topics 
@@ -16,20 +17,21 @@ namespace Learningdiary_RL
             if (answer == "Yes")
             {
                 Console.WriteLine(@"
-1. Some kind of id
-2. Title
-3. Description
-4. Estimated time to master
-5. Time used 
-6. Sourses 
-7. Start time
-8. Completion date
-9. Is learning still in progress" + "\n");
+- ID to your diary
+- Title
+- Description
+- Estimated time to master
+- Soures 
+- Start time
+- Is learning still in progress
+- Completion date
+- Time used" + "\n");
             }
             else
                 Console.WriteLine();
 
             //Asking user to enter values to topics
+
             Console.WriteLine("Write id: ");
             topic.Id = int.Parse(Console.ReadLine());
 
@@ -42,9 +44,6 @@ namespace Learningdiary_RL
             Console.WriteLine("Estimated time to master: ");
             topic.EstimatedTimeToMaster = double.Parse(Console.ReadLine());
 
-            Console.WriteLine("Time used: ");
-            topic.TimeSpent = double.Parse(Console.ReadLine());
-
             Console.WriteLine("Source: ");
             topic.Source = Console.ReadLine();
 
@@ -52,20 +51,26 @@ namespace Learningdiary_RL
             topic.StartLearningDate = DateTime.Parse(Console.ReadLine());
 
             Console.WriteLine("Is learning still in progress? Yes / No ");
-            string progress = Console.ReadLine(topic.InProgress.ToString());
-            //topic.InProgress = bool.Parse(Console.ReadLine());
-            //string progress = Console.ReadLine();
-            //topic.InProgress;
+            string progress = Console.ReadLine();
             if (progress == "No")
             {
                 topic.InProgress = false;
                 Console.WriteLine("Add completion date dd/mm/yyyy: ");
                 topic.CompletionDate = DateTime.Parse(Console.ReadLine());
+                DateTime startedLearning = topic.StartLearningDate;
+                DateTime endedLearning = topic.CompletionDate;
+                TimeSpan learningTime = endedLearning - startedLearning;
+                //double time = learningTime.TotalDays;
+                Console.WriteLine("\nYour learning time was:" + learningTime); 
             }
             else
             {
                 topic.InProgress = true;
             }
+
+            /* Console.WriteLine("Time used: "); If users learning is complete, program should count this automatically.
+             topic.TimeSpent = double.Parse(Console.ReadLine()); 
+            */
 
             //saving users answers to file topics.txt
             string path = @"C:\Users\Roosa\source\repos\Learningdiary_RL\topics.txt";
@@ -74,7 +79,6 @@ namespace Learningdiary_RL
             {
                 using (StreamWriter sw = File.CreateText(path))
                 {
-
                     sw.WriteLine(topic.Id.ToString() + " " +
                         topic.Title + " " +
                         topic.Description + " " +
@@ -107,9 +111,7 @@ namespace Learningdiary_RL
                 {
                     Console.WriteLine(s);
                 }
-
             }
-
         }
 
     }
@@ -125,7 +127,6 @@ namespace Learningdiary_RL
         public DateTime StartLearningDate { get; set; }
         public bool InProgress { get; set; }
         public DateTime CompletionDate { get; set; }
-
     }
 }
 
