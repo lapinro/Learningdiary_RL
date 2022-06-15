@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
+using System.Text;
 
 namespace Learningdiary_RL
 {
@@ -8,10 +10,9 @@ namespace Learningdiary_RL
     {
         static void Main(string[] args)
         {
-
             Topic topic = new Topic();
 
-            //Asking if user wants a list of topics 
+            //asking if user wants a list of topics 
             Console.WriteLine("Do you want a list of all topics? Yes / No ");
             string answer = Console.ReadLine();
             if (answer == "Yes")
@@ -30,7 +31,7 @@ namespace Learningdiary_RL
             else
                 Console.WriteLine();
 
-            //Asking user to enter values to topics
+            //asking user to enter values to topics
 
             Console.WriteLine("Write id: ");
             topic.Id = int.Parse(Console.ReadLine());
@@ -60,73 +61,284 @@ namespace Learningdiary_RL
                 DateTime startedLearning = topic.StartLearningDate;
                 DateTime endedLearning = topic.CompletionDate;
                 TimeSpan learningTime = endedLearning - startedLearning;
-                //double time = learningTime.TotalDays;
-                Console.WriteLine("\nYour learning time was:" + learningTime); 
+                topic.TimeSpent = Convert.ToDouble(learningTime);
+                Console.WriteLine("\nYour learning time was:" + learningTime.Days);
+
             }
             else
             {
                 topic.InProgress = true;
             }
 
-            /* Console.WriteLine("Time used: "); If users learning is complete, program should count this automatically.
-             topic.TimeSpent = double.Parse(Console.ReadLine()); 
-            */
-
             //saving users answers to file topics.txt
-            string path = @"C:\Users\Roosa\source\repos\Learningdiary_RL\topics.txt";
+            topic.FileSaving();
 
-            if (!File.Exists(path))
+            //list of all answers
+            List<Topic> list = new List<Topic>();
+            list.Add(topic);
+
+            Console.WriteLine("Do you want to find your topic by entering Id or Topic? TOPIC / ID");
+            string IdorTopic = Console.ReadLine();
+
+            //user selected ID
+            if (IdorTopic == "ID")
             {
-                using (StreamWriter sw = File.CreateText(path))
+                Console.WriteLine("Write topic ID you want to find: ");
+                int findID = int.Parse(Console.ReadLine());
+                var find = list.Where(findID => findID.Id == topic.Id).FirstOrDefault(); 
+
+                //user can update information 
+                Console.WriteLine("Choose what you want to update: ");
+                Console.WriteLine("I = ID");
+                Console.WriteLine("T = Title");
+                Console.WriteLine("D = Description");
+                Console.WriteLine("E = Estimated time to master");
+                Console.WriteLine("S = Source");
+                Console.WriteLine("L = When you started learning");
+                Console.WriteLine("P = Is learning still in progress");
+                Console.WriteLine("X = Exit");
+                string userAnswer = Console.ReadLine();
+                switch (userAnswer)
                 {
-                    sw.WriteLine(topic.Id.ToString() + " " +
-                        topic.Title + " " +
-                        topic.Description + " " +
-                        topic.EstimatedTimeToMaster.ToString() + " " +
-                        topic.TimeSpent.ToString() + " " +
-                        topic.Source + " " +
-                        topic.StartLearningDate.ToString() + " " +
-                        topic.CompletionDate.ToString() + " " +
-                        topic.InProgress.ToString());
+                    case "I":
+                        Console.WriteLine("Write new id or X to remove it: ");
+                        string updateId = Console.ReadLine();
+                       if (updateId == "X")
+                        {
+                            list.Remove(find);
+                            Console.WriteLine("Id \"{0}\" is now removed", topic.Id);
+                        }
+                        else
+                        {
+                            topic.Id = Convert.ToInt32(updateId);
+                            Console.WriteLine("new Id \"{0}\" is now added",topic.Id);
+                        } 
+                        break;
+                    case "T":
+                        Console.WriteLine("Write new Title or X to remove it: ");
+                        string updateTitle = Console.ReadLine();
+                        if (updateTitle == "X")
+                        {
+                            list.Remove(find);
+                            Console.WriteLine("Title \"{0}\" is now removed", topic.Title);
+                        }
+                        else
+                        { 
+                            updateTitle = topic.Title;
+                            Console.WriteLine("new Title \"{0}\" is now added", topic.Title);
+                        }
+
+                        break;
+                    case "D":
+                        Console.WriteLine("Write new Description or X to remove it:");
+                        string updateDesc = Console.ReadLine();
+                        if (updateDesc == "X")
+                        {
+                            list.Remove(find);
+                            Console.WriteLine("Description \"{0}\" is now removed", topic.Description);
+                        }
+                        else
+                        {
+                            updateDesc = topic.Description;
+                            Console.WriteLine("new Description \"{0}\" is now added", topic.Description);
+                        }
+                        break;
+                    case "E":
+                        Console.WriteLine("Write new Estimated time to master or X to remove it:");
+                        string updateEstimated = Console.ReadLine();
+                        if (updateEstimated == "X")
+                        {
+                            list.Remove(find);
+                            Console.WriteLine("Estimated time to master \"{0}\" is now removed", topic.EstimatedTimeToMaster);
+                        }
+                        else
+                        {
+                            updateEstimated = topic.Description;
+                            Console.WriteLine("new Estimated time to master \"{0}\" is now added", topic.EstimatedTimeToMaster);
+                        }
+                        break;
+                    case "S":
+                        Console.WriteLine("Write new Source or X to remove it:");
+                        string updateSource = Console.ReadLine();
+                        if (updateSource == "X")
+                        {
+                            list.Remove(find);
+                            Console.WriteLine("Source \"{0}\" is now removed", topic.Source);
+                        }
+                        else
+                        {
+                            updateSource = topic.Source;
+                            Console.WriteLine("new Source \"{0}\" is now added", topic.Source);
+                        }
+                        break;
+                    case "L":
+                        Console.WriteLine("Write new Start time (dd/mm/yyyy) or X to remove it:");
+                        string updateStartTime = Console.ReadLine();
+                        if (updateStartTime == "X")
+                        {
+                            list.Remove(find);
+                            Console.WriteLine("Start time \"{0}\" is now removed", topic.StartLearningDate);
+                        }
+                        else
+                        {
+                            topic.StartLearningDate = DateTime.Parse(updateStartTime);
+                            Console.WriteLine("new Start time \"{0}\" is now added", topic.StartLearningDate);
+                        }
+                        break;
+                    case "P":
+                        Console.WriteLine("Is learning still in progress? Yes / No (you can only change this)");
+                        string progress2 = Console.ReadLine();
+                        if (progress2 == "No")
+                        {
+                            topic.InProgress = false;
+                            Console.WriteLine("Add completion date dd/mm/yyyy: ");
+                            topic.CompletionDate = DateTime.Parse(Console.ReadLine());
+                            DateTime startedLearning = topic.StartLearningDate;
+                            DateTime endedLearning = topic.CompletionDate;
+                            TimeSpan learningTime = endedLearning - startedLearning;
+                            topic.TimeSpent = Convert.ToDouble(learningTime);
+                            Console.WriteLine("\nYour learning time was:" + learningTime.Days);
+                        }
+                        else
+                        {
+                            topic.InProgress = true;
+                        }
+                        break;
+                    case "EXIT":
+                        break;
                 }
             }
-
-            using (StreamWriter sw = File.AppendText(path))
+            else //user selected title
             {
-                sw.WriteLine(topic.Id.ToString() + " " +
-                        topic.Title + " " +
-                        topic.Description + " " +
-                        topic.EstimatedTimeToMaster.ToString() + " " +
-                        topic.TimeSpent.ToString() + " " +
-                        topic.Source + " " +
-                        topic.StartLearningDate.ToString() + " " +
-                        topic.CompletionDate.ToString() + " " +
-                        topic.InProgress.ToString());
-            }
+                Console.WriteLine("Write topic name you want to find: ");
+                string findTitle = Console.ReadLine();
+                var findT = list.Where(findID => findID.Title == topic.Title).FirstOrDefault();
 
-            using (StreamReader sr = File.OpenText(path))
-            {
-                string s = "";
-                while ((s = sr.ReadLine()) != null)
+                //user can update information 
+                Console.WriteLine("Choose what you want to update: ");
+                Console.WriteLine("I = ID");
+                Console.WriteLine("T = Title");
+                Console.WriteLine("D = Description");
+                Console.WriteLine("E = Estimated time to master");
+                Console.WriteLine("S = Source");
+                Console.WriteLine("L = When you started learning");
+                Console.WriteLine("P = Is learning still in progress");
+                Console.WriteLine("X = Exit");
+                string userAnswer = Console.ReadLine();
+                switch (userAnswer)
                 {
-                    Console.WriteLine(s);
+                    case "I":
+                        Console.WriteLine("Write new id or X to remove it: ");
+                        string updateId = Console.ReadLine();
+                        if (updateId == "X")
+                        {
+                            list.Remove(findT);
+                            Console.WriteLine("Id \"{0}\" is now removed", topic.Id);
+                        }
+                        else
+                        {
+                            topic.Id = Convert.ToInt32(updateId);
+                            Console.WriteLine("new Id \"{0}\" is now added", topic.Id);
+                        }
+                        break;
+                    case "T":
+                        Console.WriteLine("Write new Title or X to remove it: ");
+                        string updateTitle = Console.ReadLine();
+                        if (updateTitle == "X")
+                        {
+                            list.Remove(findT);
+                            Console.WriteLine("Title \"{0}\" is now removed", topic.Title);
+                        }
+                        else
+                        {
+                            updateTitle = topic.Title;
+                            Console.WriteLine("new Title \"{0}\" is now added", topic.Title);
+                        }
+
+                        break;
+                    case "D":
+                        Console.WriteLine("Write new Description or X to remove it:");
+                        string updateDesc = Console.ReadLine();
+                        if (updateDesc == "X")
+                        {
+                            list.Remove(findT);
+                            Console.WriteLine("Description \"{0}\" is now removed", topic.Description);
+                        }
+                        else
+                        {
+                            updateDesc = topic.Description;
+                            Console.WriteLine("new Description \"{0}\" is now added", topic.Description);
+                        }
+                        break;
+                    case "E":
+                        Console.WriteLine("Write new Estimated time to master or X to remove it:");
+                        string updateEstimated = Console.ReadLine();
+                        if (updateEstimated == "X")
+                        {
+                            list.Remove(findT);
+                            Console.WriteLine("Estimated time to master \"{0}\" is now removed", topic.EstimatedTimeToMaster);
+                        }
+                        else
+                        {
+                            updateEstimated = topic.Description;
+                            Console.WriteLine("new Estimated time to master \"{0}\" is now added", topic.EstimatedTimeToMaster);
+                        }
+                        break;
+                    case "S":
+                        Console.WriteLine("Write new Source or X to remove it:");
+                        string updateSource = Console.ReadLine();
+                        if (updateSource == "X")
+                        {
+                            list.Remove(findT);
+                            Console.WriteLine("Source \"{0}\" is now removed", topic.Source);
+                        }
+                        else
+                        {
+                            updateSource = topic.Source;
+                            Console.WriteLine("new Source \"{0}\" is now added", topic.Source);
+                        }
+                        break;
+                    case "L":
+                        Console.WriteLine("Write new Start time (dd/mm/yyyy) or X to remove it:");
+                        string updateStartTime = Console.ReadLine();
+                        if (updateStartTime == "X")
+                        {
+                            list.Remove(findT);
+                            Console.WriteLine("Start time \"{0}\" is now removed", topic.StartLearningDate);
+                        }
+                        else
+                        {
+                            topic.StartLearningDate = DateTime.Parse(updateStartTime);
+                            Console.WriteLine("new Start time \"{0}\" is now added", topic.StartLearningDate);
+                        }
+                        break;
+                    case "P":
+                        Console.WriteLine("Is learning still in progress? Yes / No (you can only change this)");
+                        string progress2 = Console.ReadLine();
+                        if (progress2 == "No")
+                        {
+                            topic.InProgress = false;
+                            Console.WriteLine("Add completion date dd/mm/yyyy: ");
+                            topic.CompletionDate = DateTime.Parse(Console.ReadLine());
+                            DateTime startedLearning = topic.StartLearningDate;
+                            DateTime endedLearning = topic.CompletionDate;
+                            TimeSpan learningTime = endedLearning - startedLearning;
+                            topic.TimeSpent = Convert.ToDouble(learningTime);
+                            Console.WriteLine("\nYour learning time was:" + learningTime.Days);
+                        }
+                        else
+                        {
+                            topic.InProgress = true;
+                        }
+                        break;
+                    case "EXIT":
+                        break;
                 }
+
             }
+
         }
 
-    }
-    class Topic
-    {
-        //All topics
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public double EstimatedTimeToMaster { get; set; }
-        public double TimeSpent { get; set; }
-        public string Source { get; set; }
-        public DateTime StartLearningDate { get; set; }
-        public bool InProgress { get; set; }
-        public DateTime CompletionDate { get; set; }
     }
 }
 
