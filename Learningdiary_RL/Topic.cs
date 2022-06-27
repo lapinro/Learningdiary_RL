@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-
+/*
 namespace Learningdiary_RL
 {
     class Topic
@@ -17,7 +17,7 @@ namespace Learningdiary_RL
         public bool InProgress { get; set; }
         public DateTime CompletionDate { get; set; }
 
-
+        
         //saver user answers to file topics.txt
         public void FileSaving()
         {
@@ -59,7 +59,9 @@ namespace Learningdiary_RL
                     Console.WriteLine(s);
                 }
             }
-        }
+        } 
     }
 
+
 }
+*/
