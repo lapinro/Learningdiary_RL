@@ -5,6 +5,8 @@ using System.IO;
 using System.Text;
 using Learningdiary_RL.Models;
 using ClassLibraryLearningDiary;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Learningdiary_RL
 {
@@ -120,6 +122,7 @@ namespace Learningdiary_RL
         //find topic by title and edit topics
         public static void FindAndEdit()
         {
+            Topic topic2 = new Topic();
 
             Console.WriteLine("Write title you want to find: ");
             string find = Console.ReadLine();
@@ -137,8 +140,8 @@ namespace Learningdiary_RL
             {
                 case "T":
                     Console.WriteLine("Write new Title: ");
-                    string updateTitle = Console.ReadLine();
-                    NewTitle(find, updateTitle);
+                    topic2.Title = Console.ReadLine();
+                    NewTitle(find, topic2.Title);
                     break;
 
                 case "D":
@@ -195,7 +198,7 @@ namespace Learningdiary_RL
 
         }
         
-        //print topic user chooses
+        //print topic user selects
         public static void PrintTopic()
         {
 
@@ -217,7 +220,8 @@ namespace Learningdiary_RL
             
 
         }
-
+        
+        //remove user selected topic 
         public static void RemoveTopic()
         {
             Console.WriteLine("Write topic ID you want to find: ");
@@ -265,7 +269,7 @@ namespace Learningdiary_RL
         }
 
         //edit title
-        public static string NewTitle(string findT, string newTitle)
+        public static void NewTitle(string findT, string newTitle)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -273,14 +277,14 @@ namespace Learningdiary_RL
                 var findTitle = learningD.Topics.Where(t => t.Title == findT).FirstOrDefault();
                 findTitle.Title = newTitle;
                 learningD.SaveChanges();
-                return findTitle.Title;
+               // return findTitle.Title;
                 Console.WriteLine("new Title \"{0}\" is now added", findTitle.Title);
             }
 
         }
 
         //edit description
-        public static string NewDescription(string findT, string newD)
+        public static void NewDescription(string findT, string newD)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -289,7 +293,7 @@ namespace Learningdiary_RL
                 findByTitle.Descriptions = newD;
 
                 learningD.SaveChanges();
-                return findByTitle.Descriptions;
+              //  return findByTitle.Descriptions;
 
             }
             Console.WriteLine("new Description \"{0}\" is now added", newD);
@@ -297,7 +301,7 @@ namespace Learningdiary_RL
         }
         
         //edit mastering time
-        public static string NewTimeToMaster(string findT, int newT)
+        public static void NewTimeToMaster(string findT, int newT)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -306,7 +310,7 @@ namespace Learningdiary_RL
                 findByTitle.TimeToMaster = newT;
 
                 learningD.SaveChanges();
-                return findByTitle.Descriptions;
+                // return findByTitle.TimeToMaster;
 
             }
             Console.WriteLine("new Estimated time to master \"{0}\" is now added", newT);
@@ -314,7 +318,7 @@ namespace Learningdiary_RL
         }
         
         //edit source
-        public static string NewSource(string findT, string newS)
+        public static void NewSource(string findT, string newS)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -323,7 +327,7 @@ namespace Learningdiary_RL
                 findByTitle.Source = newS;
 
                 learningD.SaveChanges();
-                return findByTitle.Descriptions;
+                //  return findByTitle.Source;
 
             }
             Console.WriteLine("new Source \"{0}\" is now added", newS);
@@ -331,7 +335,7 @@ namespace Learningdiary_RL
         }
         
         //edit start time
-        public static string NewStartTime(string findT, DateTime newDate)
+        public static void NewStartTime(string findT, DateTime newDate)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -340,7 +344,7 @@ namespace Learningdiary_RL
                 findByTitle.StartLearningDate = newDate;
 
                 learningD.SaveChanges();
-                return findByTitle.Descriptions;
+                //  return findByTitle.StartLearningDate;
 
             }
             Console.WriteLine("new Start Time \"{0}\" is now added", newDate);
@@ -348,7 +352,7 @@ namespace Learningdiary_RL
         }
        
         //edit progress
-        public static string NewProgress(string findT)
+        public static void NewProgress(string findT)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -383,7 +387,7 @@ namespace Learningdiary_RL
                 }
 
                 learningD.SaveChanges();
-                return findByT.Descriptions;
+                
 
             }
 
