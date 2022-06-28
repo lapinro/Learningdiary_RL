@@ -11,24 +11,22 @@ namespace Learningdiary_RL
     class Program
     {
         static void Main(string[] args)
-        {
-
-          //  Topic topic = new Topic();
-            MethodLibrary useMethods = new MethodLibrary();
-
-            bool menu = true; 
+        {       
+            
+            bool menu = true;
             while (menu)
             {
                 menu = MainMenu();
             }
-         
+
             static bool MainMenu()
             {
-                
+
                 Console.WriteLine("1 = create new topic");
                 Console.WriteLine("2 = edit topic by title");
                 Console.WriteLine("3 = print list of your topic");
-                Console.WriteLine("4 = exit");
+                Console.WriteLine("4 = delete topic");
+                Console.WriteLine("5 = exit");
                 switch (Console.ReadLine())
                 {
                     case "1":
@@ -41,250 +39,374 @@ namespace Learningdiary_RL
                         PrintTopic();
                         return true;
                     case "4":
-                        return false;                       
+                        RemoveTopic();
+                        return true;
+                    case "5":
+                        return false;
                 }
                 return false;
             }
 
-            //add new topic
-            static void NewTopic()
+        }
+        //add new topic
+        public static void NewTopic()
+        {
+            Topic newtopic = new Topic();
+
+            Console.WriteLine("Title: ");
+            newtopic.Title = Console.ReadLine();
+
+            Console.WriteLine("Description: ");
+            newtopic.Descriptions = Console.ReadLine();
+
+            Console.WriteLine("Estimated time to master (days): ");
+            try
             {
-                Topic newtopic = new Topic();
-
-                Console.WriteLine("Title: ");
-                newtopic.Title = Console.ReadLine();
-
-                Console.WriteLine("Description: ");
-                newtopic.Descriptions = Console.ReadLine();
-
-                Console.WriteLine("Estimated time to master (days): "); 
                 newtopic.TimeToMaster = int.Parse(Console.ReadLine());
+            }
 
-                Console.WriteLine("Source: ");
-                newtopic.Source = Console.ReadLine();
+            catch (Exception)
+            {
+                Console.WriteLine("Write only numbers!");
+                newtopic.TimeToMaster = int.Parse(Console.ReadLine());
+            }
 
-                Console.WriteLine("Start time dd/mm/yyyy: ");
+            Console.WriteLine("Source: ");
+            newtopic.Source = Console.ReadLine();
+
+            Console.WriteLine("Start time dd/mm/yyyy: ");
+            try
+            {
                 newtopic.StartLearningDate = DateTime.Parse(Console.ReadLine());
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Check that you entered the date in the correct format dd/mm/yyyy");
+                newtopic.StartLearningDate = DateTime.Parse(Console.ReadLine());
+            }
+
+            Console.WriteLine("Is learning still in progress? Yes / No ");
+            string progress = Console.ReadLine();
+            if (progress == "No")
+            {
+                newtopic.InProgress = false;
+                Console.WriteLine("Add completion date dd/mm/yyyy: ");
+                try
+                {
+                    newtopic.CompletionDate = DateTime.Parse(Console.ReadLine());
+                }
+                catch
+                {
+                    Console.WriteLine("Check that you entered the date in the correct format dd/mm/yyyy");
+                    newtopic.CompletionDate = DateTime.Parse(Console.ReadLine());
+                }
+                TimeSpan learningTime = Convert.ToDateTime(newtopic.CompletionDate) - Convert.ToDateTime(newtopic.StartLearningDate);
+                newtopic.TimeSpent = Convert.ToDouble(learningTime); //EI TOIMI AJON AIKANA
+                Console.WriteLine("\nYour learning time was:" + learningTime.Days);
+
+            }
+            else
+            {
+                newtopic.InProgress = true;
+            }
+
+            List<Topic> newtopiclist = new List<Topic>();
+            newtopiclist.Add(newtopic);
+
+            SaveSQL(newtopiclist); //saves answers to SQL
+
+        }
+
+        //find topic by title and edit topics
+        public static void FindAndEdit()
+        {
+
+            Console.WriteLine("Write title you want to find: ");
+            string find = Console.ReadLine();
+
+            Console.WriteLine("Choose what you want to update: ");
+            Console.WriteLine("T = Title");
+            Console.WriteLine("D = Description");
+            Console.WriteLine("E = Estimated time to master");
+            Console.WriteLine("S = Source");
+            Console.WriteLine("L = When you started learning");
+            Console.WriteLine("P = Is learning still in progress");
+            Console.WriteLine("X = Exit");
+            string userAnswer = Console.ReadLine();
+            switch (userAnswer)
+            {
+                case "T":
+                    Console.WriteLine("Write new Title: ");
+                    string updateTitle = Console.ReadLine();
+                    NewTitle(find, updateTitle);
+                    break;
+
+                case "D":
+                    Console.WriteLine("Write new Description:");
+                    string updateDesc = Console.ReadLine();
+                    NewDescription(find, updateDesc);
+                    break;
+                    
+                  case "E":
+                    Console.WriteLine("Write new Estimated time to master: ");
+                    try
+                    {
+                        int updateEstimated = Convert.ToInt32(Console.ReadLine());
+                        NewTimeToMaster(find, updateEstimated);
+                    }
+                    catch(Exception)
+                    {
+                        Console.WriteLine("Write only numbers!");
+                        int updateEstimated = Convert.ToInt32(Console.ReadLine());
+                        NewTimeToMaster(find, updateEstimated);
+                    }
+                    break;
+                    
+                    case "S":
+                        Console.WriteLine("Write new Source:");
+                        string updateSource = Console.ReadLine();
+                        NewSource(find, updateSource);
+
+                        break;
+                    
+                    case "L":
+                        Console.WriteLine("Write new Start time (dd/mm/yyyy):");
+                    try
+                    {
+                        string updateStartTime = Console.ReadLine();
+                        NewStartTime(find, Convert.ToDateTime(updateStartTime));
+                       
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Check that you entered the date in the correct format dd/mm/yyyy");
+                        string updateStartTime = Console.ReadLine();
+                        NewStartTime(find, Convert.ToDateTime(updateStartTime));
+                    }
+
+                     break;
+                    case "P":
+                    NewProgress(find);
+                    break;
+                    case "EXIT":
+                        break; 
+            }
+
+
+        }
+        
+        //print topic user chooses
+        public static void PrintTopic()
+        {
+
+
+            Console.WriteLine("Write topic ID you want to find: ");
+            int findID = Convert.ToInt32(Console.ReadLine());
+
+            using (LearningDiaryContext learningD = new LearningDiaryContext())
+            {
+                var printTopic = learningD.Topics.Where(i => i.Id == findID).FirstOrDefault();
+                Console.WriteLine("{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n{6}",
+                    printTopic.Id,
+                    printTopic.Title,
+                    printTopic.Descriptions,
+                    printTopic.TimeToMaster,
+                    printTopic.Source);
+               //     StudyingSchedule(Convert.ToDateTime(printTopic.StartLearningDate), Convert.ToInt32(printTopic.TimeToMaster)));// EI TOIMI
+            }
+            
+
+        }
+
+        public static void RemoveTopic()
+        {
+            Console.WriteLine("Write topic ID you want to find: ");
+            int findID = Convert.ToInt32(Console.ReadLine());
+            using (LearningDiaryContext learningD = new LearningDiaryContext())
+            {
+                var printTopic = learningD.Topics.Where(i => i.Id == findID).FirstOrDefault();
+                learningD.Remove(printTopic);
+            }
+
+            Console.WriteLine("Topic is now removed");
+            Console.ReadLine();
+        }
+
+        //saves answers to SQL
+        public static void SaveSQL(List<Topic> topics)
+        {
+            foreach (var item in topics)
+            {
+
+                using (LearningDiaryContext learningD = new LearningDiaryContext())
+                {
+                    //Topic table = new Topic()
+                    var table = learningD.Topics.Select(item => item);
+                    Topic topic1 = new Topic()
+
+                    {
+                        // Id = topic.Id,
+                        Title = item.Title,
+                        Descriptions = item.Descriptions,
+                        TimeToMaster = item.TimeToMaster,
+                        TimeSpent = item.TimeSpent,
+                        Source = item.Source,
+                        StartLearningDate = item.StartLearningDate,
+                        CompletionDate = item.CompletionDate,
+                        InProgress = item.InProgress
+                    };
+
+                    learningD.Topics.Add(topic1);
+                    learningD.SaveChanges();
+
+                }
+            }
+
+        }
+
+        //edit title
+        public static string NewTitle(string findT, string newTitle)
+        {
+
+            using (LearningDiaryContext learningD = new LearningDiaryContext())
+            {
+                var findTitle = learningD.Topics.Where(t => t.Title == findT).FirstOrDefault();
+                findTitle.Title = newTitle;
+                learningD.SaveChanges();
+                return findTitle.Title;
+                Console.WriteLine("new Title \"{0}\" is now added", findTitle.Title);
+            }
+
+        }
+
+        //edit description
+        public static string NewDescription(string findT, string newD)
+        {
+
+            using (LearningDiaryContext learningD = new LearningDiaryContext())
+            {
+                var findByTitle = learningD.Topics.Where(d => d.Title == findT).FirstOrDefault();
+                findByTitle.Descriptions = newD;
+
+                learningD.SaveChanges();
+                return findByTitle.Descriptions;
+
+            }
+            Console.WriteLine("new Description \"{0}\" is now added", newD);
+
+        }
+        
+        //edit mastering time
+        public static string NewTimeToMaster(string findT, int newT)
+        {
+
+            using (LearningDiaryContext learningD = new LearningDiaryContext())
+            {
+                var findByTitle = learningD.Topics.Where(d => d.Title == findT).FirstOrDefault();
+                findByTitle.TimeToMaster = newT;
+
+                learningD.SaveChanges();
+                return findByTitle.Descriptions;
+
+            }
+            Console.WriteLine("new Estimated time to master \"{0}\" is now added", newT);
+
+        }
+        
+        //edit source
+        public static string NewSource(string findT, string newS)
+        {
+
+            using (LearningDiaryContext learningD = new LearningDiaryContext())
+            {
+                var findByTitle = learningD.Topics.Where(d => d.Title == findT).FirstOrDefault();
+                findByTitle.Source = newS;
+
+                learningD.SaveChanges();
+                return findByTitle.Descriptions;
+
+            }
+            Console.WriteLine("new Source \"{0}\" is now added", newS);
+
+        }
+        
+        //edit start time
+        public static string NewStartTime(string findT, DateTime newDate)
+        {
+
+            using (LearningDiaryContext learningD = new LearningDiaryContext())
+            {
+                var findByTitle = learningD.Topics.Where(d => d.Title == findT).FirstOrDefault();
+                findByTitle.StartLearningDate = newDate;
+
+                learningD.SaveChanges();
+                return findByTitle.Descriptions;
+
+            }
+            Console.WriteLine("new Start Time \"{0}\" is now added", newDate);
+
+        }
+       
+        //edit progress
+        public static string NewProgress(string findT)
+        {
+
+            using (LearningDiaryContext learningD = new LearningDiaryContext())
+            {
+                var findByT = learningD.Topics.Where(d => d.Title == findT).FirstOrDefault();
 
                 Console.WriteLine("Is learning still in progress? Yes / No ");
                 string progress = Console.ReadLine();
                 if (progress == "No")
                 {
-                    newtopic.InProgress = false;
-                    Console.WriteLine("Add completion date dd/mm/yyyy: ");
+                    bool progressBoolean = false;
+                    findByT.InProgress = progressBoolean;
 
-                   // DateTime startedLearning = Convert.ToDateTime(newtopic.StartLearningDate);
-                    //DateTime endedLearning = Convert.ToDateTime(newtopic.CompletionDate);
-                    TimeSpan learningTime =  Convert.ToDateTime(newtopic.CompletionDate) - Convert.ToDateTime(newtopic.StartLearningDate);
-                    // TimeSpan learningTime = endedLearning - startedLearning;
-                    newtopic.TimeSpent = Convert.ToDouble(learningTime);
-                    Console.WriteLine("\nYour learning time was:" + learningTime.Days); 
-                     
+                    Console.WriteLine("Add completion date dd/mm/yyyy: ");
+                    try
+                    {
+                        findByT.CompletionDate = DateTime.Parse(Console.ReadLine());
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Check that you entered the date in the correct format dd/mm/yyyy");
+                        findByT.CompletionDate = DateTime.Parse(Console.ReadLine());
+                    }
+                    TimeSpan learningTime = Convert.ToDateTime(findByT.CompletionDate) - Convert.ToDateTime(findByT.StartLearningDate);
+                    findByT.TimeSpent = Convert.ToDouble(learningTime); //EI TOIMI AJON AIKANA
+                    Console.WriteLine("\nYour learning time was:" + learningTime.Days);
+
                 }
                 else
                 {
-                    newtopic.InProgress = true;
-                }
-       
-                List<Topic> newtopiclist = new List<Topic>();
-                newtopiclist.Add(newtopic);
-
-                SaveSQL(newtopiclist); //saves answers to SQL
-             
-            }
-
-            //find topic by title and edit topics
-            static void FindAndEdit()
-            {
-
-                    Console.WriteLine("Write title you want to find: ");
-                    string find = Console.ReadLine();
-
-                    Console.WriteLine("Choose what you want to update: ");
-                    Console.WriteLine("T = Title");
-                    Console.WriteLine("D = Description");
-                    Console.WriteLine("E = Estimated time to master");
-                    Console.WriteLine("S = Source");
-                    Console.WriteLine("L = When you started learning");
-                    Console.WriteLine("P = Is learning still in progress");
-                    Console.WriteLine("X = Exit");
-                    string userAnswer = Console.ReadLine();
-                    switch (userAnswer)
-                    {
-                        case "T":
-                            Console.WriteLine("Write new Title (Notice that you cannot remove Title): ");
-                            string updateTitle = Console.ReadLine();
-                            NewTitle(find, updateTitle); 
-                            
-                            break;
-
-                        case "D":
-                            Console.WriteLine("Write new Description or X to remove it:");
-                            string updateDesc = Console.ReadLine();
-                            if (updateDesc == "X")
-                            {
-                             //   list.Remove(find);
-                              //  Console.WriteLine("Description \"{0}\" is now removed", topic.Description);
-                            }
-                            else
-                            {
-                            NewDescription(find, updateDesc);
-                            }
-                            break;
-                        /*
-                        case "E":
-                            Console.WriteLine("Write new Estimated time to master or X to remove it:");
-                            string updateEstimated = Console.ReadLine();
-                            if (updateEstimated == "X")
-                            {
-                                list.Remove(find);
-                                Console.WriteLine("Estimated time to master \"{0}\" is now removed", topic.EstimatedTimeToMaster);
-                            }
-                            else
-                            {
-                                updateEstimated = topic.Description;
-                                Console.WriteLine("new Estimated time to master \"{0}\" is now added", topic.EstimatedTimeToMaster);
-                            }
-                            break;
-                        case "S":
-                            Console.WriteLine("Write new Source or X to remove it:");
-                            string updateSource = Console.ReadLine();
-                            if (updateSource == "X")
-                            {
-                                list.Remove(find);
-                                Console.WriteLine("Source \"{0}\" is now removed", topic.Source);
-                            }
-                            else
-                            {
-                                updateSource = topic.Source;
-                                Console.WriteLine("new Source \"{0}\" is now added", topic.Source);
-                            }
-                            break;
-                        case "L":
-                            Console.WriteLine("Write new Start time (dd/mm/yyyy) or X to remove it:");
-                            string updateStartTime = Console.ReadLine();
-                            if (updateStartTime == "X")
-                            {
-                                list.Remove(find);
-                                Console.WriteLine("Start time \"{0}\" is now removed", topic.StartLearningDate);
-                            }
-                            else
-                            {
-                                topic.StartLearningDate = DateTime.Parse(updateStartTime);
-                                Console.WriteLine("new Start time \"{0}\" is now added", topic.StartLearningDate);
-                            }
-                            break;
-                        case "P":
-                            Console.WriteLine("Is learning still in progress? Yes / No (you can only change this)");
-                            string progress2 = Console.ReadLine();
-                            if (progress2 == "No")
-                            {
-                                topic.InProgress = false;
-                                Console.WriteLine("Add completion date dd/mm/yyyy: ");
-                                topic.CompletionDate = DateTime.Parse(Console.ReadLine());
-                                DateTime startedLearning = topic.StartLearningDate;
-                                DateTime endedLearning = topic.CompletionDate;
-                                TimeSpan learningTime = endedLearning - startedLearning;
-                                topic.TimeSpent = Convert.ToDouble(learningTime);
-                                Console.WriteLine("\nYour learning time was:" + learningTime.Days);
-                            }
-                            else
-                            {
-                                topic.InProgress = true;
-                            }
-                            break;
-                        case "EXIT":
-                            break; */
-                    }
-
-                   
-            }
-
-            static void PrintTopic()
-            {
-                //etsii jonkin tiedon perusteella topicin ja printtaa sen
-            }
- 
-            //saves answers to SQL
-            static void SaveSQL(List<Topic> topics)
-            {
-                foreach (var item in topics)
-                {
-
-                    using (LearningDiaryContext learningD = new LearningDiaryContext())
-                    {
-                        //Topic table = new Topic()
-                        var table = learningD.Topics.Select(item => item);
-                        Topic topic1 = new Topic()
-
-                        {
-                            // Id = topic.Id,
-                            Title = item.Title,
-                            Descriptions = item.Descriptions,
-                            TimeToMaster = item.TimeToMaster,
-                            TimeSpent = item.TimeSpent,
-                            Source = item.Source,
-                            StartLearningDate = item.StartLearningDate,
-                            CompletionDate = item.CompletionDate,
-                            InProgress = item.InProgress
-                        };
-                        
-                        learningD.Topics.Add(topic1);
-                        learningD.SaveChanges();
-
-                    }
+                    findByT.InProgress = true;
                 }
 
-            }
-            
-            //edit title
-            static string NewTitle(string findT, string newTitle)
-            {
-
-                using (LearningDiaryContext learningD = new LearningDiaryContext())
-                {
-                    var findTitle = learningD.Topics.Where(t => t.Title == findT).FirstOrDefault();
-                    findTitle.Title = newTitle;
-                    learningD.SaveChanges();
-                    return findTitle.Title;
-                    Console.WriteLine("new Title \"{0}\" is now added", findTitle.Title);
-                }
-                
-            }
-
-            //edit description
-            static string NewDescription(string findT, string newD)
-            {
-
-                using (LearningDiaryContext learningD = new LearningDiaryContext())
-                {
-                    var findByTitle = learningD.Topics.Where(d => d.Title == findT).FirstOrDefault();
-                    findByTitle.Descriptions = newD;
-                    Console.WriteLine("new Description \"{0}\" is now added", findByTitle.Descriptions);
-                    learningD.SaveChanges();
-                    return findByTitle.Descriptions;
-
-                }
+                learningD.SaveChanges();
+                return findByT.Descriptions;
 
             }
-            
-            static string RemoveDescription(string findT)
-            {
-                using (LearningDiaryContext learningD = new LearningDiaryContext())
-                {
-                    var findByTitle = learningD.Topics.Where(d => d.Title == findT).FirstOrDefault();
-                    learningD.Remove(findByTitle.Descriptions);
-                    Console.WriteLine("Description \"{0}\" is now removed", findByTitle.Descriptions);
-                    learningD.SaveChanges();
-                    return findByTitle.Descriptions;
-                    
-                }
-            }
-           
+
         }
+        
+        //tells user (in PrintTopic) if studying is still in progress
+        public static void StudyingSchedule(DateTime date, double days )
+        {
+            MethodLibrary methods = new MethodLibrary();
+            methods.CheckIfLate(date, days);
+            if (true)
+            {
+               Console.WriteLine("This topic is behind schedule");
+            }
+            else
+            {
+                Console.WriteLine("This topic is on schedule :)");
+            }
             
+                
+        }
     }
-    
+
 }
 
 
