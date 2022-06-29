@@ -136,7 +136,7 @@ namespace Learningdiary_RL
             Console.WriteLine("P = Is learning still in progress");
             Console.WriteLine("X = Exit");
             string userAnswer = Console.ReadLine();
-            switch (userAnswer)
+            switch (userAnswer.ToUpper())
             {
                 case "T":
                     Console.WriteLine("Write new Title: ");
@@ -146,22 +146,23 @@ namespace Learningdiary_RL
 
                 case "D":
                     Console.WriteLine("Write new Description:");
-                    string updateDesc = Console.ReadLine();
-                    NewDescription(find, updateDesc);
+                    topic2.Descriptions = Console.ReadLine();
+                    NewDescription(find, topic2.Descriptions);
                     break;
                     
                   case "E":
                     Console.WriteLine("Write new Estimated time to master: ");
+                    
                     try
                     {
-                        int updateEstimated = Convert.ToInt32(Console.ReadLine());
-                        NewTimeToMaster(find, updateEstimated);
+                        topic2.TimeToMaster = Convert.ToInt32(Console.ReadLine());
+                        NewTimeToMaster(find, Convert.ToInt32(topic2.TimeToMaster));
                     }
                     catch(Exception)
                     {
                         Console.WriteLine("Write only numbers!");
-                        int updateEstimated = Convert.ToInt32(Console.ReadLine());
-                        NewTimeToMaster(find, updateEstimated);
+                        topic2.TimeToMaster = Convert.ToInt32(Console.ReadLine());
+                        NewTimeToMaster(find, Convert.ToInt32(topic2.TimeToMaster));
                     }
                     break;
                     
@@ -201,24 +202,45 @@ namespace Learningdiary_RL
         //print topic user selects
         public static void PrintTopic()
         {
-
-
-            Console.WriteLine("Write topic ID you want to find: ");
-            int findID = Convert.ToInt32(Console.ReadLine());
-
-            using (LearningDiaryContext learningD = new LearningDiaryContext())
+            Console.WriteLine("Do you want to fidn topic by ID or TOPIC?");
+            string choose = Console.ReadLine();
+            switch (choose.ToUpper())
             {
-                var printTopic = learningD.Topics.Where(i => i.Id == findID).FirstOrDefault();
-                Console.WriteLine("{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n{6}",
-                    printTopic.Id,
-                    printTopic.Title,
-                    printTopic.Descriptions,
-                    printTopic.TimeToMaster,
-                    printTopic.Source);
-               //     StudyingSchedule(Convert.ToDateTime(printTopic.StartLearningDate), Convert.ToInt32(printTopic.TimeToMaster)));// EI TOIMI
-            }
-            
+                case "ID":
+                    Console.WriteLine("Write topic ID you want to find: ");
+                    int findID = Convert.ToInt32(Console.ReadLine());
 
+                    using (LearningDiaryContext learningD = new LearningDiaryContext())
+                    {
+                        var printTopic = learningD.Topics.Where(i => i.Id == findID).FirstOrDefault();
+                        Console.WriteLine("\nId: {0}\nTitle: {1}\nDescription: {2}\nTimeToMaster: {3}\nSource: {4}\n{5}",
+                            printTopic.Id,
+                            printTopic.Title,
+                            printTopic.Descriptions,
+                            printTopic.TimeToMaster,
+                            printTopic.Source,
+                            StudyingSchedule(Convert.ToDateTime(printTopic.StartLearningDate), Convert.ToDouble(printTopic.TimeToMaster)));
+                        Console.ReadLine();
+                    }
+                    break;
+                case "TOPIC":
+                    Console.WriteLine("Write Title you want to find: ");
+                    string findTitle = Console.ReadLine();
+
+                    using (LearningDiaryContext learningD = new LearningDiaryContext())
+                    {
+                        var printTopic = learningD.Topics.Where(i => i.Title == findTitle).FirstOrDefault();
+                        Console.WriteLine("\nId: {0}\nTitle: {1}\nDescription: {2}\nTimeToMaster: {3}\nSource: {4}\n{5}",
+                            printTopic.Id,
+                            printTopic.Title,
+                            printTopic.Descriptions,
+                            printTopic.TimeToMaster,
+                            printTopic.Source,
+                            StudyingSchedule(Convert.ToDateTime(printTopic.StartLearningDate), Convert.ToDouble(printTopic.TimeToMaster)));
+                        Console.ReadLine();
+                    }
+                    break;
+            }
         }
         
         //remove user selected topic 
@@ -394,17 +416,21 @@ namespace Learningdiary_RL
         }
         
         //tells user (in PrintTopic) if studying is still in progress
-        public static void StudyingSchedule(DateTime date, double days )
+        public static string StudyingSchedule(DateTime date, double days)
         {
             MethodLibrary methods = new MethodLibrary();
             methods.CheckIfLate(date, days);
             if (true)
             {
-               Console.WriteLine("This topic is behind schedule");
+                string schedule = "This topic is behind schedule";
+                Console.WriteLine(schedule);
+                return schedule;
             }
             else
             {
-                Console.WriteLine("This topic is on schedule :)");
+                string schedule2 = "This topic is on schedule :)";
+                Console.WriteLine(schedule2);
+                return schedule2;
             }
             
                 
