@@ -49,7 +49,7 @@ namespace Learningdiary_RL
                 }
                 return false;
             }
-
+            
         }
 
         //add new topic
@@ -120,16 +120,18 @@ namespace Learningdiary_RL
 
             SaveSQL(newtopiclist); //saves answers to SQL
 
+          
+
         }
 
         //find topic by title and edit topics
-        public static void EditByTitle()
+        public static async Task EditByTitle()
         {
             Topic topic2 = new Topic();
 
             Console.WriteLine("Write title you want to find: ");
             string find = Console.ReadLine();
-            FindTitle(find); // checks if topic exists
+            await FindTitle(find); // checks if topic exists
 
             Console.WriteLine("Choose what you want to update: ");
             Console.WriteLine("T = Title");
@@ -145,13 +147,13 @@ namespace Learningdiary_RL
                 case "T":
                     Console.WriteLine("Write new Title: ");
                     topic2.Title = Console.ReadLine();
-                    NewTitle(find, topic2.Title);
+                   await NewTitle(find, topic2.Title);
                     break;
 
                 case "D":
                     Console.WriteLine("Write new Description:");
                     topic2.Descriptions = Console.ReadLine();
-                    NewDescription(find, topic2.Descriptions);
+                    await NewDescription(find, topic2.Descriptions);
                     break;
 
                 case "E":
@@ -159,20 +161,20 @@ namespace Learningdiary_RL
                     try
                     {
                         topic2.TimeToMaster = Convert.ToInt32(Console.ReadLine());
-                        NewTimeToMaster(find, Convert.ToInt32(topic2.TimeToMaster));
+                        await NewTimeToMaster(find, Convert.ToInt32(topic2.TimeToMaster));
                     }
                     catch (Exception)
                     {
                         Console.WriteLine("Write only numbers!");
                         topic2.TimeToMaster = Convert.ToInt32(Console.ReadLine());
-                        NewTimeToMaster(find, Convert.ToInt32(topic2.TimeToMaster));
+                        await NewTimeToMaster (find, Convert.ToInt32(topic2.TimeToMaster));
                     }
                     break;
 
                 case "S":
                     Console.WriteLine("Write new Source:");
                     topic2.Source = Console.ReadLine();
-                    NewSource(find, topic2.Source);
+                    await NewSource (find, topic2.Source);
 
                     break;
 
@@ -181,14 +183,14 @@ namespace Learningdiary_RL
                     try
                     {
                         topic2.StartLearningDate = Convert.ToDateTime(Console.ReadLine());
-                        NewStartTime(find, Convert.ToDateTime(topic2.StartLearningDate));
+                        await NewStartTime (find, Convert.ToDateTime(topic2.StartLearningDate));
 
                     }
                     catch (Exception)
                     {
                         Console.WriteLine("Check that you entered the date in the correct format dd/mm/yyyy");
                         topic2.StartLearningDate = Convert.ToDateTime(Console.ReadLine());
-                        NewStartTime(find, Convert.ToDateTime(topic2.StartLearningDate));
+                        await NewStartTime (find, Convert.ToDateTime(topic2.StartLearningDate));
                     }
 
                     break;
@@ -196,18 +198,17 @@ namespace Learningdiary_RL
                    /* topic2.InProgress = NewProgress(find);
                     if (topic2.InProgress == false)
                     {
-                        topic2.CompletionDate = NewCompeltionDate(find);
-                    } */ //SELVITÄ MIKSI TÄMÄ KAATUU 
+                        topic2.CompletionDate = NewCompletionDate(find);
+                    }  //SELVITÄ MIKSI TÄMÄ KAATUU  */
                     break;
                 case "EXIT":
                     break;
             }
 
-
         }
 
         //print topic user selects
-        public static void PrintTopic()
+        public static async Task PrintTopic()
         {
             Console.WriteLine("Do you want to find topic by ID or TOPIC?");
             string choose = Console.ReadLine();
@@ -216,7 +217,7 @@ namespace Learningdiary_RL
                 case "ID":
                     Console.WriteLine("Write topic ID you want to find: ");
                     int findID = Convert.ToInt32(Console.ReadLine());
-                    FindId(findID);
+                    await FindId(findID);
                     using (LearningDiaryContext learningD = new LearningDiaryContext())
                     {
                         var printTopic = learningD.Topics.Where(i => i.Id == findID).FirstOrDefault();
@@ -233,7 +234,7 @@ namespace Learningdiary_RL
                 case "TOPIC":
                     Console.WriteLine("Write Title you want to find: ");
                     string findTitle = Console.ReadLine();
-                    FindTitle(findTitle);
+                    await FindTitle(findTitle);
                     using (LearningDiaryContext learningD = new LearningDiaryContext())
                     {
                         var printTopic = learningD.Topics.Where(i => i.Title == findTitle).FirstOrDefault();
@@ -308,7 +309,7 @@ namespace Learningdiary_RL
         }
         
         //checks if topic exists (search by title)
-        public static void FindTitle(string find)
+        public static async Task FindTitle(string find)
         {
             using (LearningDiaryContext learningD = new LearningDiaryContext())
             {
@@ -321,7 +322,7 @@ namespace Learningdiary_RL
         }
         
         //checks if topic exists (search by ID)
-        public static void FindId(int find)
+        public static async Task FindId(int find)
         {
             using (LearningDiaryContext learningD = new LearningDiaryContext())
             {
@@ -334,7 +335,7 @@ namespace Learningdiary_RL
         }
 
         //edit title
-        public static void NewTitle(string findT, string newTitle)
+        public static async Task NewTitle(string findT, string newTitle)
         {
             using (LearningDiaryContext learningD = new LearningDiaryContext())
             {
@@ -347,7 +348,7 @@ namespace Learningdiary_RL
         }
 
         //edit description
-        public static void NewDescription(string findT, string newD)
+        public static async Task NewDescription(string findT, string newD)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -363,7 +364,7 @@ namespace Learningdiary_RL
         }
 
         //edit mastering time
-        public static void NewTimeToMaster(string findT, int newT)
+        public static async Task NewTimeToMaster(string findT, int newT)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -380,7 +381,7 @@ namespace Learningdiary_RL
         }
 
         //edit source
-        public static void NewSource(string findT, string newS)
+        public static async Task NewSource(string findT, string newS)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -397,7 +398,7 @@ namespace Learningdiary_RL
         }
 
         //edit start time
-        public static void NewStartTime(string findT, DateTime newDate)
+        public static async Task NewStartTime(string findT, DateTime newDate)
         {
 
             using (LearningDiaryContext learningD = new LearningDiaryContext())
@@ -422,7 +423,7 @@ namespace Learningdiary_RL
 
                 Console.WriteLine("Is learning still in progress? YES / NO ");
                 string progress = Console.ReadLine();
-                if (progress == "NO")
+                if (progress.ToUpper() == "NO")
                 {
                     //  bool progressBoolean = false;
                     //  return findByT.InProgress = progressBoolean;
@@ -453,9 +454,7 @@ namespace Learningdiary_RL
 
                 learningD.SaveChanges();
 
-
             }
-
 
         }
        
