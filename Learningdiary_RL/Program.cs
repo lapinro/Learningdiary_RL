@@ -195,11 +195,11 @@ namespace Learningdiary_RL
 
                     break;
                 case "P":
-                   /* topic2.InProgress = NewProgress(find);
+                    topic2.InProgress = NewProgress(find);
                     if (topic2.InProgress == false)
                     {
                         topic2.CompletionDate = NewCompletionDate(find);
-                    }  //SELVITÄ MIKSI TÄMÄ KAATUU  */
+                    }   
                     break;
                 case "EXIT":
                     break;
@@ -413,7 +413,7 @@ namespace Learningdiary_RL
 
         }
 
-        //edit progress EI TOIMI 
+        //edit progress 
         public static bool NewProgress(string findT)
         {
 
@@ -458,8 +458,8 @@ namespace Learningdiary_RL
 
         }
        
-        //method to add new completiondate if user set NewProgress to "NO" EI TOIMI
-        public static void NewCompletionDate(string findT)
+        //method to add new completiondate if user set NewProgress to 
+        public static DateTime? NewCompletionDate(string findT)
         {
             using (LearningDiaryContext learningD = new LearningDiaryContext())
             {
@@ -469,6 +469,11 @@ namespace Learningdiary_RL
                 try
                 {
                     findByT.CompletionDate = DateTime.Parse(Console.ReadLine());
+                    TimeSpan learningTime = Convert.ToDateTime(findByT.CompletionDate) - Convert.ToDateTime(findByT.StartLearningDate);
+                    Console.WriteLine("\nYour learning time was:" + learningTime.Days);
+                    findByT.TimeSpent = Convert.ToDouble(learningTime.TotalDays);
+
+                    return findByT.CompletionDate;
                    // return Convert.ToDateTime(findByT.CompletionDate); Kokeilin myös että medoti palauttaisi datetime mutta ei toiminut
                 }
                 catch
@@ -477,9 +482,10 @@ namespace Learningdiary_RL
                     findByT.CompletionDate = DateTime.Parse(Console.ReadLine());
 
                 }
-                TimeSpan learningTime = Convert.ToDateTime(findByT.CompletionDate) - Convert.ToDateTime(findByT.StartLearningDate);
-                Console.WriteLine("\nYour learning time was:" + learningTime.Days);
-                findByT.TimeSpent = Convert.ToDouble(learningTime.TotalDays);
+
+
+                return null;
+                
             }
         }
      
